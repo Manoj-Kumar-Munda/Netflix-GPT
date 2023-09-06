@@ -10,7 +10,7 @@ const Header = () => {
             <img src={NETFLIX_LOGO_URL} alt="logo" className="h-full" loading="lazy" />
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 pr-2">
             <button className="bg-red-600 py-2 px-4 rounded-lg">
               <span className="text-white whitespace-nowrap font-semibold">
                 Sign In
