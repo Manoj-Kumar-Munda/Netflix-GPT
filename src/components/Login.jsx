@@ -1,11 +1,67 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Header from "./Header";
+import { validateSignIn } from "../utils/validate";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from "../utils/firebase";
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
+
+  const formRef = useRef();
+  const name = useRef(null);
+  const email = useRef(null);
+  const password = useRef(null);
+
+  useEffect(() => {
+    formRef.current.reset();
+    setErrorMessage(null);
+  }, [isSignInForm]);
 
   const toggleSignInForm = () => {
     setIsSignInForm(!isSignInForm);
+  };
+
+  const handleButtonClick = () => {
+    const message = validateSignIn(email.current.value, password.current.value);
+    setErrorMessage(message);
+    if (!isSignInForm) {
+      //SignUp logic
+      createUserWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          //Signed in
+          const user = userCredential.user;
+          console.log(user);
+          //...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+
+          setErrorMessage(errorCode + "-" + errorMessage);
+        });
+    } else {
+      //signIn logic
+      signInWithEmailAndPassword(auth, email.current.value, password.current.value)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          console.log(user);
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(errorCode+"-"+errorMessage);
+        });
+    }
   };
   return (
     <div className="relative xl:min-h-screen bg-hero-bg bg-cover">
@@ -15,13 +71,18 @@ const Login = () => {
 
       <div className="relative py-10 left-0 right-0 top-1/4 flex justify-center">
         <div className="mx-2 py-6 px-8 bg-black/70 rounded-md">
-          <form className="space-y-6 max-w-sm">
+          <form
+            className="space-y-6 max-w-sm"
+            onSubmit={(e) => e.preventDefault()}
+            ref={formRef}
+          >
             <h1 className="text-xl text-white ">
               {isSignInForm ? "Sign In" : "Sign Up"}
             </h1>
             <div className="space-y-2">
               {!isSignInForm ? (
                 <input
+                  ref={name}
                   type="text"
                   name="name"
                   id="name"
@@ -30,34 +91,41 @@ const Login = () => {
                 />
               ) : null}
               <input
+                ref={email}
                 type="text"
-                name="userId"
-                id="userId"
-                placeholder="Email or phone number"
+                name="email"
+                id="email"
+                placeholder="Enter email"
                 className="w-full py-2 px-3 outline-none bg-stone-700/75 caret-slate-400 text-white"
               />
               <input
-                type="text"
+                ref={password}
+                type="password"
                 placeholder="Password"
                 className="w-full py-2 px-3 outline-none bg-stone-700/75 caret-slate-400 text-white"
               />
             </div>
 
+            <p className="text-red-600 text-sm font-bold">{errorMessage}</p>
+
             <div className="space-y-2">
-              <button className="w-full py-2 text-center bg-red-600 text-white">
+              <button
+                className="w-full py-2 text-center bg-red-600 text-white"
+                onClick={handleButtonClick}
+              >
                 <span>{isSignInForm ? "Sign In" : "Sign Up"}</span>
               </button>
             </div>
           </form>
 
           <p className="my-8 text-gray-500">
-            {isSignInForm ? "New to Netflix ? ": "Already have an account ?" }
+            {isSignInForm ? "New to Netflix ? " : "Already have an account ?"}
 
             <span
               className="text-white font-semibold cursor-pointer px-1"
               onClick={() => toggleSignInForm()}
             >
-              {isSignInForm ? "Sign up now": "Sign in"}
+              {isSignInForm ? "Sign up now" : "Sign in"}
             </span>
           </p>
         </div>
