@@ -15,3 +15,10 @@ export const TMDB_API_OPTIONS = {
 export const MOVIES_API = 'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&page=1&sort_by=popularity.desc';
 
 export const MOVIE_POSTER_URL = 'https://image.tmdb.org/t/p/w500';
+
+export const POPULAR_MOVIES_API = 'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1';
+
+export const TOP_RATED_MOVIES_API = 'https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1';
+
+export const UPCOMING_MOVIES_API = 'https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1';
+
