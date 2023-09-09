@@ -1,11 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NETFLIX_LOGO_URL } from "../utils/links";
 import { useDispatch, useSelector } from "react-redux";
-
 import { auth } from "../utils/firebase";
-import { signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { removeUser } from "../utils/userSlice";
+import { addUser, removeUser } from "../utils/userSlice";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -17,14 +16,37 @@ const Header = () => {
       .then(() => {
         // Sign-out successful.
         dispatch(removeUser());
-        navigate("/");
+
       })
       .catch((error) => {
         // An error happened.
       });
   };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        //signed In
+        const { uid, email, displayName, photoURL } = user;
+        dispatch(
+          addUser({
+            uid: uid,
+            email: email,
+            displayName: displayName,
+            photoURL: photoURL,
+          })
+        );
+        navigate("/browse");
+      } else {
+        // User is signed out
+        dispatch(removeUser());
+        navigate("/");
+      }
+    });
+    return () => unsubscribe();
+  }, []);
   return (
-    <div className="relative z-50">
+    <div className="absolute top-0 left-0 right-0 z-50 bg-header">
       <div className="mx-auto flex max-h-16 xl:max-h-24 justify-between xl:max-w-screen-xl  3xl:max-w-screen-2xl">
         <div className="">
           <img
@@ -44,7 +66,9 @@ const Header = () => {
             </button>
           ) : (
             <>
-              <span className="text-red-600 font-semibold">Welcome, {user.displayName}</span>
+              <span className="text-red-600 font-semibold">
+                Welcome, {user.displayName}
+              </span>
               <button
                 className="bg-red-600 py-2 px-4 rounded-lg"
                 onClick={handleSignOut}
