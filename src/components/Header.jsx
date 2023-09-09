@@ -46,7 +46,7 @@ const Header = () => {
     return () => unsubscribe();
   }, []);
   return (
-    <div className="absolute top-0 left-0 right-0 z-50 bg-header">
+    <div className="absolute top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/95 to-transparent">
       <div className="mx-auto flex max-h-16 xl:max-h-24 justify-between xl:max-w-screen-xl  3xl:max-w-screen-2xl">
         <div className="">
           <img

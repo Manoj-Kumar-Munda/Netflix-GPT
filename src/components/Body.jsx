@@ -20,7 +20,7 @@ const Body = () => {
 
   
   return (
-    <div>
+    <div className="bg-gray-900">
       <RouterProvider router={appRouter} />
     </div>
   );
